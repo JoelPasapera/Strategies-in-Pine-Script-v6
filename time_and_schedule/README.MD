@@ -43,17 +43,18 @@ Additionally, the chart background is colored during active sessions for easy vi
 ---
 
 ## 📊 Visual Example
-```
-Banco Santander, S.A.
-```
+ 
+**Banco Santander, S.A.**
+ 
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b182e01a940478438db39c05b57754f228d24787/time_and_schedule/Screenshot_1.png)
-```
-NVIDIA Corporation
-```
+ 
+**NVIDIA Corporation**
+ 
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/7a8bf64679d052283c7f40ead56b80e0dbd6291e/time_and_schedule/Screenshot_2.png)
-
-
-
+ 
+**Nike, Inc.**
+ 
+![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b1524ad35e0e0b950db178a2f66c27e5b4372e3a/time_and_schedule/Screenshot_3.png)
 
 
 
