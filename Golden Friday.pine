@@ -1,7 +1,7 @@
 // This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 // © JJPP_Joel
-
 //@version=6
+
 strategy("Golden Friday", overlay=true, fill_orders_on_standard_ohlc = true)
 
 bool session = (dayofweek == dayofweek.friday) and (hour>= 14 and hour <= 16)
