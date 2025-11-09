@@ -50,6 +50,12 @@ Additionally, the chart background is colored during active sessions for easy vi
  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/d26f3e3bffe90ec3b97e3ac32909472ec62e3bbf/time_and_schedule/Screenshot_4.png)
 
+## 📊 Index
+
+**US Russell 2000 Cash**
+
+![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/a49c5362fe115bb9d4ad38e3cb509810f731dbc6/time_and_schedule/Screenshot_5.png)
+
 ## 📊 Stocks
  
 **Banco Santander, S.A.**
