@@ -44,8 +44,10 @@ Additionally, the chart background is colored during active sessions for easy vi
 
 ## 📊 Visual Example
 
-```pinescript
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b182e01a940478438db39c05b57754f228d24787/time_and_schedule/Screenshot_1.png)
+
+```pinescript
+
 
 
 
