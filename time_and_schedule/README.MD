@@ -1,9 +1,11 @@
 # ⏰ Time and Schedule — Pine Script Strategy
 
+```pinescript
 **Author:** Joel Pasapera Pinto  
 **Language:** Pine Script® v6  
 **License:** [Mozilla Public License 2.0](https://mozilla.org/MPL/2.0/)  
 **Copyright:** © JJPP_Joel  
+```
 
 ---
 
@@ -46,7 +48,7 @@ Additionally, the chart background is colored during active sessions for easy vi
 
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b182e01a940478438db39c05b57754f228d24787/time_and_schedule/Screenshot_1.png)
 
-```pinescript
+
 
 
 
