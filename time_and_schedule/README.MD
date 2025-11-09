@@ -42,7 +42,15 @@ Additionally, the chart background is colored during active sessions for easy vi
 
 ---
 
-## 📊 Visual Example
+# 📊 Visual examples of the strategy: Equity curve
+
+## 📊 Metals
+
+**XAUUSD**
+ 
+![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/d26f3e3bffe90ec3b97e3ac32909472ec62e3bbf/time_and_schedule/Screenshot_4.png)
+
+## 📊 Stocks
  
 **Banco Santander, S.A.**
  
