@@ -1,3 +1,8 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © JJPP_Joel
+// Author: Joel Pasapera Pinto
+//@version=6
+
 //@version=6
 strategy("Estrategia EMA and BARS", overlay = true, initial_capital = 10000)
 
@@ -36,4 +41,5 @@ if count == variable
 // Visualización
 // ==========================
 plot(ema20, "EMA 20", color = color.orange)
+
 plot(ema50, "EMA 50", color = color.blue)
