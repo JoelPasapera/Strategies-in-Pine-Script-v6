@@ -1,0 +1,39 @@
+//@version=6
+strategy("Estrategia EMA and BARS", overlay = true, initial_capital = 10000)
+
+float lot_size = input.float(1,"lot_size",step=0.1,minval=0.1)
+int variable = input.int(defval = 50,title = "bars")
+int ema1 = input.int(defval = 50,title = "ema1")
+int ema2 = input.int(defval = 20,title = "ema2")
+
+// ==========================
+// Cálculo de EMAs
+// ==========================
+ema20 = ta.ema(close, ema1)
+ema50 = ta.ema(close, ema2)
+
+// ==========================
+// Condición de compra
+// ==========================
+long_signal = ta.crossover(ema50, ema20)
+
+
+// ==========================
+// Entrada
+// ==========================
+if long_signal
+    strategy.entry("Compra", strategy.long,lot_size)
+
+var int count = 0
+
+count += 1
+
+if count == variable
+    strategy.close("Compra")
+    count := 0
+
+// ==========================
+// Visualización
+// ==========================
+plot(ema20, "EMA 20", color = color.orange)
+plot(ema50, "EMA 50", color = color.blue)

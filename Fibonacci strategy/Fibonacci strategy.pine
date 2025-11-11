@@ -1,0 +1,42 @@
+//@version=6
+strategy("Fibonacci strategy", overlay = true, margin_long = 100, initial_capital = 10000)
+
+// ==========================
+// Function: obtain the maximum and minimum values from the previous day
+// ==========================
+get_prev_day_high_low() =>
+    high_prev = request.security(syminfo.tickerid, "D", high[1])
+    low_prev  = request.security(syminfo.tickerid, "D", low[1])
+    [high_prev, low_prev]
+
+// ==========================
+// Parameters
+// ==========================
+float lot_size = input.float(1,"lot_size",step=0.1,minval=0.1)
+int hold_hours = input.int(8, "Hours to maintain operation")
+float fib_level  = input.float(0.382, "Fibonacci level")
+int entry_hour = input.int(8, "entry hour")
+
+// ==========================
+// Calc Fibonacci
+// ==========================
+[high_prev, low_prev] = get_prev_day_high_low()
+fib_038 = high_prev - (high_prev - low_prev) * fib_level
+
+long_condition = (hour == entry_hour and close < fib_038)
+
+if long_condition and strategy.opentrades == 0
+    strategy.entry("BuyFib", strategy.long, limit = fib_038, qty = lot_size)
+
+// ==========================
+// Departure after N hours
+// ==========================
+bars_in_trade = ta.barssince(strategy.opentrades == 0)
+
+if strategy.position_size > 0 and bars_in_trade >= hold_hours
+    strategy.close("BuyFib", comment = "Cierre por tiempo")
+
+// ==========================
+// Drawings on the chart
+// ==========================
+plot(fib_038, "Fib 0.382", color = color.orange, linewidth = 2)
