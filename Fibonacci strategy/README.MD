@@ -35,3 +35,21 @@ Its simplicity and clarity make it ideal for backtesting **trend-continuation sc
 
 2. **Calculate Fibonacci retracement**  
    The script calculates the **Fibonacci 0.382 level**:
+
+---
+
+# 📊 Visual examples of the strategy: Equity curve
+
+## 📊 Metals
+
+**XAUUSD**
+
+![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/a986a649cf7a85ccf630f18674adad4846ca422d/Fibonacci%20strategy/Screenshot_1.png)
+
+## 📊 Index
+
+**Dollar Index TVC**
+
+![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/a986a649cf7a85ccf630f18674adad4846ca422d/Fibonacci%20strategy/Screenshot_2.png)
+
+---
