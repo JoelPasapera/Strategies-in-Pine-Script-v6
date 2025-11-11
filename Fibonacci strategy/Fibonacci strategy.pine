@@ -1,3 +1,8 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © JJPP_Joel
+// Author: Joel Pasapera Pinto
+//@version=6
+
 //@version=6
 strategy("Fibonacci strategy", overlay = true, margin_long = 100, initial_capital = 10000)
 
@@ -39,4 +44,5 @@ if strategy.position_size > 0 and bars_in_trade >= hold_hours
 // ==========================
 // Drawings on the chart
 // ==========================
+
 plot(fib_038, "Fib 0.382", color = color.orange, linewidth = 2)
