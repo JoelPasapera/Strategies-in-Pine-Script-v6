@@ -52,27 +52,8 @@ Each folder = **one complete mini project**, with its own documentation and resu
 
 ## 📷 Example Results
 
-Below are sample performance curves from different configurations:
+Below are sample performance curves from different configurations.
 
-### 🟡 Metals
-**Gold (XAUUSD)**  
-![Gold Strategy Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_4.png)
-
-### 📈 Index
-**US Russell 2000 Cash**  
-![Index Strategy Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_5.png)
-
-### 💼 Stocks
-**Banco Santander, S.A.**  
-![Banco Santander Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_1.png)
-
-**NVIDIA Corporation**  
-![NVIDIA Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_2.png)
-
-**Nike, Inc.**  
-![Nike Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_3.png)
-
----
 
 ## 🔍 Goal of the Repository
 
