@@ -44,31 +44,25 @@ Additionally, the chart background is colored during active sessions for easy vi
 
 # 📊 Visual examples of the strategy: Equity curve
 
-## 📊 Metals
+### 🟡 Metals
+**Gold (XAUUSD)**  
+![Gold Strategy Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_4.png)
 
-**XAUUSD**
- 
-![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/d26f3e3bffe90ec3b97e3ac32909472ec62e3bbf/time_and_schedule/Screenshot_4.png)
+### 📈 Index
+**US Russell 2000 Cash**  
+![Index Strategy Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_5.png)
 
-## 📊 Index
+### 💼 Stocks
+**Banco Santander, S.A.**  
+![Banco Santander Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_1.png)
 
-**US Russell 2000 Cash**
+**NVIDIA Corporation**  
+![NVIDIA Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_2.png)
 
-![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/a49c5362fe115bb9d4ad38e3cb509810f731dbc6/time_and_schedule/Screenshot_5.png)
+**Nike, Inc.**  
+![Nike Performance](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/main/time_and_schedule/Screenshot_3.png)
 
-## 📊 Stocks
- 
-**Banco Santander, S.A.**
- 
-![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b182e01a940478438db39c05b57754f228d24787/time_and_schedule/Screenshot_1.png)
- 
-**NVIDIA Corporation**
- 
-![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/7a8bf64679d052283c7f40ead56b80e0dbd6291e/time_and_schedule/Screenshot_2.png)
- 
-**Nike, Inc.**
- 
-![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b1524ad35e0e0b950db178a2f66c27e5b4372e3a/time_and_schedule/Screenshot_3.png)
+---
 
 
 
