@@ -1,0 +1,95 @@
+//@version=6
+strategy("Breakout Strategy", 
+     overlay=true, 
+     default_qty_type=strategy.percent_of_equity, // 
+     default_qty_value=10, // Invests 10% of capital per trade
+     pyramiding=0) // Does not allow adding to an existing position 
+
+// --- 1. INPUT PARAMETERS (Configurable by the user) ---
+// Breakout parameter group
+var group_channels = "Breakout channels"
+int entryLength = input.int(20, "Entry breakout period", minval=2, group=group_channels)  
+int exitLength = input.int(10, "Period for outbound breakout", minval=1, group=group_channels) 
+
+// Grupo de Parámetros de Gestión de Riesgo
+var group_risk = "Risk management and confirmation"
+bool useSL = input.bool(true, "Use stop loss", group=group_risk) 
+float slMultiplier = input.float(2.0, "ATR multiplier for stop loss", minval=0.1, group=group_risk)  
+
+bool useTP = input.bool(true, "Use Take Profit", group=group_risk) 
+float tpMultiplier = input.float(4.0, "ATR multiplier for Take Profit", minval=0.1, group=group_risk) 
+
+int atrPeriod = input.int(14, "ATR period", minval=1, group=group_risk)  
+
+// Wait for the candle to close
+bool useBarConfirm = input.bool(true, "Wait for confirmation of the candle?", 
+     tooltip="Wait for the candle to close before entering/exiting. This helps prevent repainting.", group=group_risk) 
+
+
+// --- 2. CALCULATIONS ---
+// Calculate the ATR for risk management
+float atr = ta.atr(atrPeriod)  
+
+// Calculate the input channels (we use [1] to refer to the *previous* candle)
+float upperEntry = ta.highest(high, entryLength)[1] 
+float lowerEntry = ta.lowest(low, entryLength)[1] 
+
+// Calculate the output channels
+float upperExit = ta.highest(high, exitLength)[1] 
+float lowerExit = ta.lowest(low, exitLength)[1] 
+
+// Confirmation status
+// We use barstate.isconfirmed to prevent the strategy from operating in the middle of the candle. 
+bool confirmation = useBarConfirm ? barstate.isconfirmed : true 
+
+
+// --- 3. STRATEGY LOGIC ---
+// Terms and Conditions of Entry
+bool enterLong = (close > upperEntry) and confirmation  
+bool enterShort = (close < lowerEntry) and confirmation  
+
+// Exit Conditions (by opposite signal)
+bool exitLong = (close < lowerExit) and confirmation
+bool exitShort = (close > upperExit) and confirmation
+
+
+// --- 4. EXECUTION OF ORDERS ---
+// Calculate SL and TP levels
+float entryPrice = strategy.position_avg_price 
+float sl_long = entryPrice - (atr * slMultiplier)
+float tp_long = entryPrice + (atr * tpMultiplier)
+float sl_short = entryPrice + (atr * slMultiplier)
+float tp_short = entryPrice - (atr * tpMultiplier)
+
+// Entry
+if (enterLong and strategy.position_size == 0) // Enter only if there is no open position 
+    strategy.entry("Entrada Long", strategy.long)  
+
+if (enterShort and strategy.position_size == 0) // Enter only if there is no open position 
+    strategy.entry("Entrada Short", strategy.short) 
+
+// Signal outputs
+if (exitLong)
+    strategy.close("Entrada Long", comment="Salida por Señal")  
+
+if (exitShort)
+    strategy.close("Entrada Short", comment="Salida por Señal")  
+
+// Stop Loss and Take Profit Exits
+if (strategy.position_size > 0) // If we are in a long trade 
+    strategy.exit("Stop/Profit Long", 
+         stop = useSL ? sl_long : na, 
+         limit = useTP ? tp_long : na)  
+
+if (strategy.position_size < 0) // If we are in a short trade   
+    strategy.exit("Stop/Profit Short", 
+         stop = useSL ? sl_short : na, 
+         limit = useTP ? tp_short : na) 
+
+
+// --- 5. PLOT (Visualization) ---
+plot(upperEntry, "Upper Channel (Entrance)", color=color.new(color.green, 0))  
+plot(lowerEntry, "Lower Channel (Entrance)", color=color.new(color.red, 0))  
+
+plot(upperExit, "Upper Channel (Outlet)", color=color.new(color.green, 70), style=plot.style_circles, linewidth=2)  
+plot(lowerExit, "Lower Channel (Outlet)", color=color.new(color.red, 70), style=plot.style_circles, linewidth=2)  
