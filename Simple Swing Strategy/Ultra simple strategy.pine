@@ -1,0 +1,20 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © JJPP_Joel
+
+//@version=6
+strategy("Swing strategy", overlay=true, fill_orders_on_standard_ohlc = true, initial_capital = 10000) 
+
+var float lot_size = input.float(5,"lot",step=0.1,minval=0.1)
+var int day1= input.int(3,"day1",minval=1, maxval=8)
+var int day2= input.int(4,"day2",minval=1, maxval=8)
+var string id = "long"
+
+longCondition = dayofweek == day1
+close_condition = dayofweek != day2
+ 
+if (longCondition)
+    strategy.entry(id, strategy.long,lot_size,comment = "Inicio del dia jueves") 
+
+if (close_condition)
+    strategy.close(id, comment = "fin del dia lunes") 
+ 
