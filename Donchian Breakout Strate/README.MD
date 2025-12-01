@@ -54,17 +54,17 @@ Its disciplined **time-based entry** and **channel-based exit** make it a robust
 
 ## 📊 Visual Examples of the Strategy
 
-### 📊 EURUSD — 30 minutos  
+### 📊 EURUSD — 30 minutes
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/3c778c5d461ea458a43bdfcf16dc05c6330881b3/Donchian%20Breakout%20Strate/Screenshot_1.png)
 
-### 📊 EURUSD — 1 hora  
+### 📊 EURUSD — 1 hour  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/3c778c5d461ea458a43bdfcf16dc05c6330881b3/Donchian%20Breakout%20Strate/Screenshot_2.png)
 
-### 📊 EURUSD — 1 hora (otro ejemplo)  
+### 📊 EURUSD — 1 hour  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/3c778c5d461ea458a43bdfcf16dc05c6330881b3/Donchian%20Breakout%20Strate/Screenshot_3.png)
 
-### 📊 GBPUSD — 30 minutos  
+### 📊 GBPUSD — 30 minutes  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/3c778c5d461ea458a43bdfcf16dc05c6330881b3/Donchian%20Breakout%20Strate/Screenshot_4.png)
 
-### 📊 GBPUSD — 1 hora  
+### 📊 GBPUSD — 1 hour 
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/3c778c5d461ea458a43bdfcf16dc05c6330881b3/Donchian%20Breakout%20Strate/Screenshot_5.png)
