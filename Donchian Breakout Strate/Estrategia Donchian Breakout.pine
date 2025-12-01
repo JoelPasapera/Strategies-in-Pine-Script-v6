@@ -1,0 +1,94 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © JJPP_Joel - Joel Pasapera
+// funciona bien para forex (EURUSD: 30m y 1h, GBPUSD: 30m y 1h), pero puedes probar en otros mercados...
+
+//@version=6
+strategy("Estrategia Donchian Breakout", overlay=true, initial_capital=1000, default_qty_type=strategy.fixed, default_qty_value=1)
+
+// ==========================================
+// ⚙️ CONFIGURACIÓN Y ENTRADAS
+// ==========================================
+
+// Configuración del Indicador
+donchianLen = input.int(25, "Longitud Canal Donchian", minval=1, group="Indicador")
+
+// Configuración de Tiempo y Reglas
+targetHour  = input.int(17, "Hora de Colocación de Orden (Hora del Exchange)", minval=0, maxval=23, group="Reglas de Estrategia")
+validHours  = input.int(60, "Horas de validez de la orden", minval=1, group="Reglas de Estrategia")
+
+// configuracion de gestion de riesgo
+lot_size = input.int(900, "Volumen de posición", minval=1, group="Riesgo")
+
+// ==========================================
+// 📐 CÁLCULOS DEL INDICADOR
+// ==========================================
+
+// Calculamos el Canal de Donchian. 
+// Usamos [1] para referirnos al máximo de las 51 velas *cerradas* anteriores.
+// Esto es crucial para definir el nivel de ruptura (Breakout).
+upperBand = ta.highest(high, donchianLen)[1]
+lowerBand = ta.lowest(low, donchianLen)[1]
+
+// Plot del canal para visualización
+plot(upperBand, "Donchian Superior", color=color.green, linewidth=2)
+plot(lowerBand, "Donchian Inferior", color=color.red, linewidth=1)
+
+// ==========================================
+// 🕒 LÓGICA DE TIEMPO
+// ==========================================
+
+// Detectar si es la hora objetivo (ej: 16:00) y si estamos en el minuto 0 de esa hora
+isTargetTime = (hour == targetHour) and (minute == 0)
+
+// Variables para guardar el estado de la orden pendiente
+var float pendingPrice = na
+var int entryBarIndex = 0
+
+// ==========================================
+// 🚀 EJECUCIÓN DE LA ORDEN (BUY STOP)
+// ==========================================
+
+// 1. Colocar la orden a las 16:00
+if isTargetTime
+    // Guardamos el precio del nivel superior actual
+    pendingPrice := upperBand
+    entryBarIndex := bar_index
+    
+    // Colocamos una orden "STOP". Esto significa que solo se comprará si el precio sube y toca este nivel.
+    strategy.entry("Long Breakout", strategy.long, stop=pendingPrice, comment="cruze de vela",qty = lot_size)
+
+// 2. Cancelación de la orden tras 7 horas
+// Si la orden no se ha llenado (no tenemos posición) y han pasado más de 'validHours' barras:
+barsPassed = bar_index - entryBarIndex
+
+if (strategy.opentrades == 0) and (barsPassed >= validHours)
+    strategy.cancel("Long Breakout")
+    pendingPrice := na // Reseteamos el precio para limpieza visual
+
+// ==========================================
+// 🚪 SALIDA (EXIT STRATEGY)
+// ==========================================
+
+// NOTA: Tu descripción no especificaba cuándo VENDER. 
+// Para que la estrategia sea funcional y rentable en el backtest, he añadido
+// una salida clásica de Donchian: Vender si el precio toca la banda inferior.
+if strategy.opentrades > 0
+    strategy.exit("Exit Long", "Long Breakout", stop=lowerBand, comment="Salida Banda Inf")
+
+// ==========================================
+// 🎨 VISUALIZACIÓN
+// ==========================================
+
+// Colorear el fondo a las 16:00 para identificar visualmente el momento
+bgcolor(isTargetTime ? color.new(color.blue, 80) : na, title="Hora Objetivo")
+
+esHoraObjetivo = hour(time) == targetHour
+
+// Dibuja una forma (triángulo) en la barra que comienza a las 16:00
+plotshape(esHoraObjetivo ? high : na, 
+     title="Marca 16:00", 
+     location=location.abovebar, // Ubicación: sobre la barra de precios (utiliza 'high' como coordenada)
+     color=color.green, // Color de la flecha
+     style=shape.triangledown, // ¡Forma de triángulo hacia abajo! (También puedes probar shape.triangleup, shape.arrowup o shape.arrowdown)
+     text="Buy\nStop", // ¡Aquí se añade el texto para la orden pendiente! 
+     size=size.tiny) // Tamaño pequeño
