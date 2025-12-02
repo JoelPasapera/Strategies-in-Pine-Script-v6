@@ -1,0 +1,344 @@
+//@version=6
+strategy(title="Stochastic Divergence Strategy", shorttitle="Stoch", initial_capital = 10000, format=format.price, precision=2, max_lines_count=500, max_labels_count=500, overlay=false)
+
+// lot size
+int lot_size = input.int(1, title="Lot size", minval=1, group="Risk")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUTS - Stochastic Parameters (unchanged from default)
+// ═══════════════════════════════════════════════════════════════════════════════
+periodK = input.int(14, title="%K Length", minval=1, group="Stochastic Settings")
+smoothK = input.int(1, title="%K Smoothing", minval=1, group="Stochastic Settings")
+periodD = input.int(3, title="%D Smoothing", minval=1, group="Stochastic Settings")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUTS - Levels
+// ═══════════════════════════════════════════════════════════════════════════════
+obLevel = input.int(80, title="Overbought Level", minval=50, maxval=100, group="Levels")
+osLevel = input.int(20, title="Oversold Level", minval=0, maxval=50, group="Levels")
+midLevel = input.int(50, title="Middle Level", minval=0, maxval=100, group="Levels")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUTS - Line Visibility
+// ═══════════════════════════════════════════════════════════════════════════════
+showK = input.bool(true, title="Show %K Line", group="Line Visibility")
+showD = input.bool(true, title="Show %D Line", group="Line Visibility")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUTS - Colors (shared for directional coloring)
+// ═══════════════════════════════════════════════════════════════════════════════
+colorUp = input.color(color.green, title="Rising Color", group="Colors")
+colorDown = input.color(color.red, title="Falling Color", group="Colors")
+colorSideways = input.color(color.white, title="Sideways Color", group="Colors")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUTS - Alert Visuals
+// ═══════════════════════════════════════════════════════════════════════════════
+showAlerts = input.bool(true, title="Show OB/OS Alerts", group="Alert Visuals")
+alertStyleOB = input.string("Circle", title="Overbought Style", options=["Circle", "Arrow Down", "Cross"], group="Alert Visuals")
+alertStyleOS = input.string("Circle", title="Oversold Style", options=["Circle", "Arrow Up", "Cross"], group="Alert Visuals")
+alertColorOB = input.color(color.red, title="Overbought Alert Color", group="Alert Visuals")
+alertColorOS = input.color(color.green, title="Oversold Alert Color", group="Alert Visuals")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUTS - Divergence Settings
+// ═══════════════════════════════════════════════════════════════════════════════
+showDivergence = input.bool(true, title="Show Divergences", group="Divergence Settings")
+divTicker = input.symbol("", title="Ticker for Divergence", tooltip="Leave empty to use current chart ticker", group="Divergence Settings")
+pivotLookbackLeft = input.int(5, title="Pivot Lookback Left", minval=1, group="Divergence Settings")
+pivotLookbackRight = input.int(5, title="Pivot Lookback Right", minval=1, group="Divergence Settings")
+maxBarsBack = input.int(100, title="Max Bars to Look Back", minval=10, maxval=500, group="Divergence Settings")
+removeBrokenDiv = input.bool(true, title="Remove Broken Divergences", group="Divergence Settings")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUTS - Divergence Colors
+// ═══════════════════════════════════════════════════════════════════════════════
+bullDivColor = input.color(#4caf50, title="Bullish Divergence Color", group="Divergence Colors")
+bearDivColor = input.color(#f23645, title="Bearish Divergence Color", group="Divergence Colors")
+divLineWidth = input.int(3, title="Divergence Line Width", minval=1, maxval=5, group="Divergence Colors")
+showDivLabels = input.bool(true, title="Show Divergence Labels", group="Divergence Colors")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUTS - STRATEGY SETTINGS (NUEVO)
+// ═══════════════════════════════════════════════════════════════════════════════
+grpStrategy = "Strategy Settings"
+useSL = input.bool(true, "Use Stop Loss", group=grpStrategy)
+slPerc = input.float(2.0, "Stop Loss (%)", minval=0.1, step=0.1, group=grpStrategy) / 100
+useTP = input.bool(true, "Use Take Profit", group=grpStrategy)
+tpPerc = input.float(4.0, "Take Profit (%)", minval=0.1, step=0.1, group=grpStrategy) / 100
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CALCULATIONS - Original Stochastic Formula (unchanged)
+// ═══════════════════════════════════════════════════════════════════════════════
+k = ta.sma(ta.stoch(close, high, low, periodK), smoothK)
+d = ta.sma(k, periodD)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GET PRICE DATA FROM SELECTED TICKER
+// ═══════════════════════════════════════════════════════════════════════════════
+tickerToUse = divTicker == "" ? syminfo.tickerid : divTicker
+[tickerClose, tickerHigh, tickerLow] = request.security(tickerToUse, timeframe.period, [close, high, low])
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DIRECTIONAL COLOR LOGIC - %K
+// ═══════════════════════════════════════════════════════════════════════════════
+kDirection = k > k[1] ? 1 : k < k[1] ? -1 : 0
+kColor = kDirection == 1 ? colorUp : kDirection == -1 ? colorDown : colorSideways
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DIRECTIONAL COLOR LOGIC - %D
+// ═══════════════════════════════════════════════════════════════════════════════
+dDirection = d > d[1] ? 1 : d < d[1] ? -1 : 0
+dColor = dDirection == 1 ? colorUp : dDirection == -1 ? colorDown : colorSideways
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// OVERBOUGHT / OVERSOLD DETECTION (based on %D)
+// ═══════════════════════════════════════════════════════════════════════════════
+crossedIntoOB = ta.crossover(d, obLevel)
+crossedIntoOS = ta.crossunder(d, osLevel)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PIVOT DETECTION ON PRICE ONLY (from selected ticker)
+// ═══════════════════════════════════════════════════════════════════════════════
+pricePivotLow = ta.pivotlow(tickerLow, pivotLookbackLeft, pivotLookbackRight)
+pricePivotHigh = ta.pivothigh(tickerHigh, pivotLookbackLeft, pivotLookbackRight)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ARRAYS TO STORE PIVOT DATA
+// ═══════════════════════════════════════════════════════════════════════════════
+// Store price swing lows and their corresponding %D values
+var int[] swingLowBars = array.new_int()
+var float[] swingLowPrices = array.new_float()
+var float[] swingLowStochD = array.new_float()
+
+// Store price swing highs and their corresponding %D values
+var int[] swingHighBars = array.new_int()
+var float[] swingHighPrices = array.new_float()
+var float[] swingHighStochD = array.new_float()
+
+// Store divergence lines for potential removal
+var line[] bullLines = array.new_line()
+var line[] bearLines = array.new_line()
+var label[] bullLabels = array.new_label()
+var label[] bearLabels = array.new_label()
+var float[] bullLineEndD = array.new_float()
+var float[] bearLineEndD = array.new_float()
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RECORD PRICE SWING LOWS AND %D VALUES AT THOSE BARS
+// ═══════════════════════════════════════════════════════════════════════════════
+if not na(pricePivotLow)
+    pivotBar = bar_index - pivotLookbackRight
+    pivotPrice = pricePivotLow
+    pivotStochD = d[pivotLookbackRight]  // Get %D value at the pivot bar
+    
+    // Store the swing low data
+    array.push(swingLowBars, pivotBar)
+    array.push(swingLowPrices, pivotPrice)
+    array.push(swingLowStochD, pivotStochD)
+    
+    // Limit array size
+    if array.size(swingLowBars) > 50
+        array.shift(swingLowBars)
+        array.shift(swingLowPrices)
+        array.shift(swingLowStochD)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RECORD PRICE SWING HIGHS AND %D VALUES AT THOSE BARS
+// ═══════════════════════════════════════════════════════════════════════════════
+if not na(pricePivotHigh)
+    pivotBar = bar_index - pivotLookbackRight
+    pivotPrice = pricePivotHigh
+    pivotStochD = d[pivotLookbackRight]  // Get %D value at the pivot bar
+    
+    // Store the swing high data
+    array.push(swingHighBars, pivotBar)
+    array.push(swingHighPrices, pivotPrice)
+    array.push(swingHighStochD, pivotStochD)
+  
+    // Limit array size
+    if array.size(swingHighBars) > 50
+        array.shift(swingHighBars)
+        array.shift(swingHighPrices)
+        array.shift(swingHighStochD)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BULLISH DIVERGENCE DETECTION
+// Price: Lower Low | Stochastic %D: Higher Low (at same bars)
+// ═══════════════════════════════════════════════════════════════════════════════
+var bool bullDivDetected = false
+bullDivDetected := false
+
+if showDivergence and not na(pricePivotLow) and array.size(swingLowBars) >= 2
+    // Current swing low (just added)
+    currentBar = array.get(swingLowBars, array.size(swingLowBars) - 1)
+    currentPrice = array.get(swingLowPrices, array.size(swingLowPrices) - 1)
+    currentStochD = array.get(swingLowStochD, array.size(swingLowStochD) - 1)
+    
+    // Look for previous swing low within maxBarsBack
+    for i = array.size(swingLowBars) - 2 to 0
+        prevBar = array.get(swingLowBars, i)
+        prevPrice = array.get(swingLowPrices, i)
+        prevStochD = array.get(swingLowStochD, i)
+        
+        // Check if within range
+        if currentBar - prevBar <= maxBarsBack
+            // BULLISH DIVERGENCE: Price Lower Low + Stochastic %D Higher Low
+            if currentPrice < prevPrice and currentStochD > prevStochD
+                // Draw line from previous %D to current %D
+                divLine = line.new(prevBar, prevStochD, currentBar, currentStochD,
+                     color=bullDivColor, width=divLineWidth, style=line.style_dotted)
+                array.push(bullLines, divLine)
+                array.push(bullLineEndD, currentStochD)
+        
+                // Add label
+                if showDivLabels
+                    divLabel = label.new(currentBar, currentStochD, "Bull",
+                         color=bullDivColor, textcolor=color.white, style=label.style_label_up, size=size.small)
+                    array.push(bullLabels, divLabel)
+                
+                bullDivDetected := true
+                break
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BEARISH DIVERGENCE DETECTION
+// Price: Higher High | Stochastic %D: Lower High (at same bars)
+// ═══════════════════════════════════════════════════════════════════════════════
+var bool bearDivDetected = false
+bearDivDetected := false
+
+if showDivergence and not na(pricePivotHigh) and array.size(swingHighBars) >= 2
+    // Current swing high (just added)
+    currentBar = array.get(swingHighBars, array.size(swingHighBars) - 1)
+    currentPrice = array.get(swingHighPrices, array.size(swingHighPrices) - 1)
+    currentStochD = array.get(swingHighStochD, array.size(swingHighStochD) - 1)
+    
+    // Look for previous swing high within maxBarsBack
+    for i = array.size(swingHighBars) - 2 to 0
+        prevBar = array.get(swingHighBars, i)
+        prevPrice = array.get(swingHighPrices, i)
+        prevStochD = array.get(swingHighStochD, i)
+        
+        // Check if within range
+        if currentBar - prevBar <= maxBarsBack
+            // BEARISH DIVERGENCE: Price Higher High + Stochastic %D Lower High
+            if currentPrice > prevPrice and currentStochD < prevStochD
+                // Draw line from previous %D to current %D
+                divLine = line.new(prevBar, prevStochD, currentBar, currentStochD,
+                     color=bearDivColor, width=divLineWidth, style=line.style_dotted)
+                array.push(bearLines, divLine)
+                array.push(bearLineEndD, currentStochD)
+        
+                // Add label
+                if showDivLabels
+                    divLabel = label.new(currentBar, currentStochD, "Bear",
+                         color=bearDivColor, textcolor=color.white, style=label.style_label_down, size=size.small)
+                    array.push(bearLabels, divLabel)
+                
+                bearDivDetected := true
+                break
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REMOVE BROKEN DIVERGENCES
+// ═══════════════════════════════════════════════════════════════════════════════
+if removeBrokenDiv and showDivergence
+    // Remove broken bullish divergences (if %D breaks below the divergence end point)
+    if array.size(bullLines) > 0
+        for i = array.size(bullLines) - 1 to 0
+            if i < array.size(bullLines) and i < array.size(bullLineEndD)
+                endD = array.get(bullLineEndD, i)
+                if d < endD - 5
+                    line.delete(array.get(bullLines, i))
+                    array.remove(bullLines, i)
+                    array.remove(bullLineEndD, i)
+                    if i < array.size(bullLabels)
+                        label.delete(array.get(bullLabels, i))
+                        array.remove(bullLabels, i)
+    
+    // Remove broken bearish divergences (if %D breaks above the divergence end point)
+    if array.size(bearLines) > 0
+        for i = array.size(bearLines) - 1 to 0
+            if i < array.size(bearLines) and i < array.size(bearLineEndD)
+                endD = array.get(bearLineEndD, i)
+                if d > endD + 5
+                    line.delete(array.get(bearLines, i))
+                    array.remove(bearLines, i)
+                    array.remove(bearLineEndD, i)
+                    if i < array.size(bearLabels)
+                        label.delete(array.get(bearLabels, i))
+                        array.remove(bearLabels, i)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PLOTS - Main Stochastic Lines
+// ═══════════════════════════════════════════════════════════════════════════════
+plot(showK ? k : na, title="%K", color=kColor, linewidth=2)
+plot(showD ? d : na, title="%D", color=dColor, linewidth=1)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PLOTS - Horizontal Bands
+// ═══════════════════════════════════════════════════════════════════════════════
+h0 = hline(obLevel, "Upper Band", color=#787B86)
+hline(midLevel, "Middle Band", color=color.new(#787B86, 50))
+h1 = hline(osLevel, "Lower Band", color=#787B86)
+fill(h0, h1, color=color.rgb(33, 150, 243, 90), title="Background")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PLOTS - Alert Shapes for Overbought (based on %D)
+// ═══════════════════════════════════════════════════════════════════════════════
+plotshape(showAlerts and crossedIntoOB and alertStyleOB == "Circle" ? d : na,
+     title="OB Circle", style=shape.circle, location=location.absolute,
+     color=alertColorOB)
+
+plotshape(showAlerts and crossedIntoOB and alertStyleOB == "Arrow Down" ? d : na,
+     title="OB Arrow", style=shape.triangledown, location=location.absolute,
+     color=alertColorOB)
+
+plotshape(showAlerts and crossedIntoOB and alertStyleOB == "Cross" ? d : na,
+     title="OB Cross", style=shape.xcross, location=location.absolute,
+     color=alertColorOB)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PLOTS - Alert Shapes for Oversold (based on %D)
+// ═══════════════════════════════════════════════════════════════════════════════
+plotshape(showAlerts and crossedIntoOS and alertStyleOS == "Circle" ? d : na,
+     title="OS Circle", style=shape.circle, location=location.absolute,
+     color=alertColorOS)
+
+plotshape(showAlerts and crossedIntoOS and alertStyleOS == "Arrow Up" ? d : na,
+     title="OS Arrow", style=shape.triangleup, location=location.absolute,
+     color=alertColorOS)
+
+plotshape(showAlerts and crossedIntoOS and alertStyleOS == "Cross" ? d : na,
+     title="OS Cross", style=shape.xcross, location=location.absolute,
+     color=alertColorOS)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STRATEGY EXECUTION LOGIC
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Entrada Larga (Compra)
+if bullDivDetected
+    strategy.entry("Long Div", strategy.long, comment="Bull Div", qty = lot_size)
+
+// Entrada Corta (Venta)
+if bearDivDetected
+    strategy.entry("Short Div", strategy.short, comment="Bear Div", qty = lot_size)
+
+// Salidas con Stop Loss y Take Profit
+if strategy.position_size > 0
+    // Salida para Posición Larga
+    strategy.exit("Exit Long", "Long Div", stop = strategy.position_avg_price * (1 - slPerc), limit = strategy.position_avg_price * (1 + tpPerc), comment="TP/SL")
+
+if strategy.position_size < 0
+    // Salida para Posición Corta
+    strategy.exit("Exit Short", "Short Div", stop = strategy.position_avg_price * (1 + slPerc), limit = strategy.position_avg_price * (1 - tpPerc), comment="TP/SL")
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ALERTS - For TradingView Alert System (Mantenidos como referencia)
+// ═══════════════════════════════════════════════════════════════════════════════
+alertcondition(crossedIntoOB, title="Overbought Alert", message="Stochastic %D crossed above overbought level")
+alertcondition(crossedIntoOS, title="Oversold Alert", message="Stochastic %D crossed below oversold level")
+alertcondition(ta.crossover(k, d), title="%K Cross Above %D", message="Stochastic %K crossed above %D - Potential Buy")
+alertcondition(ta.crossunder(k, d), title="%K Cross Below %D", message="Stochastic %K crossed below %D - Potential Sell")
+alertcondition(bullDivDetected, title="Bullish Divergence", message="Bullish Divergence: Price Lower Low + Stochastic %D Higher Low")
+alertcondition(bearDivDetected, title="Bearish Divergence", message="Bearish Divergence: Price Higher High + Stochastic %D Lower High")
