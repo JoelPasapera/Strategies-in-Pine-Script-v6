@@ -71,23 +71,23 @@ By combining **momentum divergence** with **disciplined risk management**, it of
 
 ## 📊 Visual Examples of the Strategy
 
-### 📊 EURUSD — 1 hora  
+### 📊 EURUSD — 1 hour  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b404778e1ffa6f7a1c114a3e6c52fd2ff3e65caa/Stochastic%20Divergence%20Strategy/Screenshot_1.png)
 
-### 📊 USDCHF — 1 hora  
+### 📊 USDCHF — 1 hour  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b404778e1ffa6f7a1c114a3e6c52fd2ff3e65caa/Stochastic%20Divergence%20Strategy/Screenshot_2.png)
 
-### 📊 AUDUSD — 30 minutos  
+### 📊 AUDUSD — 30 minutes  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b404778e1ffa6f7a1c114a3e6c52fd2ff3e65caa/Stochastic%20Divergence%20Strategy/Screenshot_3.png)
 
-### 📊 AUDUSD — 15 minutos  
+### 📊 AUDUSD — 15 minutes  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b404778e1ffa6f7a1c114a3e6c52fd2ff3e65caa/Stochastic%20Divergence%20Strategy/Screenshot_4.png)
 
-### 📊 AUDUSD — 5 minutos  
+### 📊 AUDUSD — 5 minutes  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b404778e1ffa6f7a1c114a3e6c52fd2ff3e65caa/Stochastic%20Divergence%20Strategy/Screenshot_5.png)
 
-### 📊 AUDUSD — 3 minutos  
+### 📊 AUDUSD — 3 minutes  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b404778e1ffa6f7a1c114a3e6c52fd2ff3e65caa/Stochastic%20Divergence%20Strategy/Screenshot_6.png)
 
-### 📊 AUDUSD — 1 minuto  
+### 📊 AUDUSD — 1 minute  
 ![image](https://github.com/JoelPasapera/Strategies-in-Pine-Script-v6/blob/b404778e1ffa6f7a1c114a3e6c52fd2ff3e65caa/Stochastic%20Divergence%20Strategy/Screenshot_7.png)
