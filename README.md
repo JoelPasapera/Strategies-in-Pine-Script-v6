@@ -76,7 +76,7 @@ To provide a transparent and organized showcase of **systematic trading research
 
 **Joel Pasapera**  
   
-> *"The job of a trader is to summarize the market into actionable, statistically-backed movements."*
+> *"The job of a trader is to summarize the market into repetitive, statistically-backed movements."*
 
 ---
 
